@@ -1,6 +1,3 @@
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import org.apache.commons.cli.UnrecognizedOptionException;
 import org.junit.Test;
 
@@ -43,5 +40,17 @@ public class ScraperApplicationTest {
         Exception exception = assertThrows(UnrecognizedOptionException.class, () -> ScraperApplication.main(args));
 
         assertEquals("Unrecognized option: -z", exception.getMessage());
+    }
+
+    @Test
+    public void scrapeAllDetailsTest() {
+        ScraperApplication scraperApplication = new ScraperApplication();
+        String json = scraperApplication.getJsonForPage(ScraperApplication.DEFAULT_SEARCH_URL);
+        assertTrue(json.contains("{\n" +
+                "      \"title\": \"Sainsbury's Strawberries 400g\",\n" +
+                "      \"description\": \"by Sainsbury's strawberries\",\n" +
+                "      \"unit_price\": 1.75,\n" +
+                "      \"kcal_per_100g\": 33\n" +
+                "    }"));
     }
 }
