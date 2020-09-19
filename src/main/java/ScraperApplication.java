@@ -36,7 +36,6 @@ public class ScraperApplication {
 
         String jsonSummary = getJsonSummary(itemSummaries);
         System.out.println(jsonSummary);
-        // TODO @SerializedName(value = "kcal_per_100g") etc. in Item
     }
 
     private static String getJsonSummary(List<Item> itemSummaries) {

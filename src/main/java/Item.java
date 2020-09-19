@@ -1,10 +1,14 @@
+import com.google.gson.annotations.SerializedName;
+
 import java.math.BigDecimal;
 
 public class Item {
     private String title ;
     private String description;
+    @SerializedName(value = "unit_price")
     private BigDecimal price ;
-    private Integer kcal; // assume int is precise enough // snake case to help json formatting?
+    @SerializedName(value = "kcal_per_100g")
+    private Integer kcal;
 
     public Item(String title, String description, BigDecimal price, Integer kcal) {
         this.title = title;
