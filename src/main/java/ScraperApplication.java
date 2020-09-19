@@ -10,7 +10,9 @@ public class ScraperApplication {
         WebScraper scraper = new WebScraper();
         List<Item> itemSummaries = scraper.getItemsInPage(searchUrl);
 
-        String jsonSummary = ItemsSummarizer.getJsonSummary(itemSummaries);
-        System.out.println(jsonSummary);
+        if (!itemSummaries.isEmpty()) {
+            String jsonSummary = ItemsSummarizer.getJsonSummary(itemSummaries);
+            System.out.println(jsonSummary);
+        }
     }
 }
