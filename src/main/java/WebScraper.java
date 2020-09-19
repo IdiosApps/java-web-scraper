@@ -3,9 +3,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -95,35 +93,41 @@ public class WebScraper {
         try {
             HtmlPage page = webClient.getPage(itemPage);
 
-            // TODO refactor this if there's time
-            String description; // there's 3 ways the item's description can be stored in html
-            HtmlElement productTextElement = page.getFirstByXPath("//div[@class='" + PRODUCT_DESCRIPTION_CLASS + "']");
-            if (productTextElement != null) {
-                description = productTextElement.asText();
-            } else {
-                productTextElement = page.getFirstByXPath("//div[@class='" + GROUP_CONTAINER_CLASS + " " + PRODUCT_DESCRIPTION_CLASS +  "']");
-                HtmlElement descriptionElement = productTextElement.getFirstByXPath(".//div[@class='memo']");
-                if (descriptionElement != null)
-                    description = descriptionElement.asText();
-                else {
-                    HtmlElement statementsElement = (HtmlElement) productTextElement.getByXPath(".//p").get(1);
-                    description = statementsElement.asText();
-                }
-            }
+            String description = getDescriptionForItem(page);
             itemDetails.put("description", description);
 
-
-            HtmlElement kcalElement = page.getFirstByXPath("//td[@class='" + KCAL_CLASS + "']");
-            if (kcalElement != null) {
-                String kcalWithUnit = kcalElement.asText();
-                String kcal = kcalWithUnit.substring(0, kcalWithUnit.indexOf("k"));
-                itemDetails.put("kcal", kcal);
-            }
+            String kcal = getKcalForItem(page);
+            if (kcal != null) itemDetails.put("kcal", kcal);
         } catch (Exception e) {
             System.out.println("Failed to get data for specific item page - author's assumptions on relative page links may be incorrect");
             e.printStackTrace();
         }
 
         return itemDetails;
+    }
+
+    // There's 3 ways the item's description can be stored in html
+    private String getDescriptionForItem(HtmlPage page) {
+        HtmlElement productTextElement = page.getFirstByXPath("//div[@class='" + PRODUCT_DESCRIPTION_CLASS + "']");
+        if (productTextElement != null)
+            return productTextElement.asText();
+
+        HtmlElement groupContainerElement = page.getFirstByXPath("//div[@class='" + GROUP_CONTAINER_CLASS + " " + PRODUCT_DESCRIPTION_CLASS +  "']");
+        HtmlElement descriptionElement = groupContainerElement.getFirstByXPath(".//div[@class='memo']");
+        if (descriptionElement != null)
+            return descriptionElement.asText();
+
+        HtmlElement statementsElement = (HtmlElement) groupContainerElement.getByXPath(".//p").get(1);
+        return statementsElement.asText();
+    }
+
+    private String getKcalForItem(HtmlPage page) {
+        HtmlElement kcalElement = page.getFirstByXPath("//td[@class='" + KCAL_CLASS + "']");
+        if (kcalElement != null) {
+            String kcalWithUnit = kcalElement.asText();
+            return kcalWithUnit.substring(0, kcalWithUnit.indexOf("k"));
+        }
+
+        return null;
     }
 }
