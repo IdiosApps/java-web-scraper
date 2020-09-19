@@ -73,7 +73,7 @@ public class WebScraper {
 
             String description = itemDetails.get("description");
 
-            HtmlElement priceElement = item.getFirstByXPath(".//p[@class='pricePerUnit']");
+            HtmlElement priceElement = item.getFirstByXPath(".//p[@class='"+ PRICE_PER_UNIT_CLASS + "']");
             String pricePerUnit = priceElement.asText(); // £1.75/unit
             String priceString = pricePerUnit.substring(1, pricePerUnit.indexOf("/"));
             BigDecimal price = new BigDecimal(priceString);
