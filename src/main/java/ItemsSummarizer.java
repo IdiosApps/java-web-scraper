@@ -10,12 +10,9 @@ public class ItemsSummarizer {
     private final static BigDecimal VAT_FROM_GROSS_MULTIPLIER = new BigDecimal("0.16666666666"); // 1 - (1/1.2)
 
     public static String getJsonSummary(List<Item> itemSummaries) {
-        BigDecimal totalPrice = itemSummaries.stream()
-                .map(Item::getPrice)
-                .reduce(new BigDecimal("0.00"), BigDecimal::add);
 
-        BigDecimal vat = totalPrice.multiply(VAT_FROM_GROSS_MULTIPLIER);
-        BigDecimal vatTwoDecimalPlaces = vat.setScale(2, RoundingMode.HALF_EVEN);
+        BigDecimal gross = calculateGrossForItems(itemSummaries);
+        String vat = calculateVatFromGross(gross);
 
         JsonArray array = new JsonArray();
 
@@ -28,10 +25,22 @@ public class ItemsSummarizer {
         array.add(itemsJson);
 
         JsonObject summaryJson = new JsonObject();
-        summaryJson.addProperty("gross", totalPrice.toString());
-        summaryJson.addProperty("vat", vatTwoDecimalPlaces.toString());
+        summaryJson.addProperty("gross", gross.toString());
+        summaryJson.addProperty("vat", vat);
         array.add(summaryJson);
 
         return gson.toJson(array);
+    }
+
+    public static BigDecimal calculateGrossForItems(List<Item> items) {
+         return items.stream()
+                .map(Item::getPrice)
+                .reduce(new BigDecimal("0.00"), BigDecimal::add);
+    }
+
+    public static String calculateVatFromGross(BigDecimal gross) {
+        BigDecimal vat = gross.multiply(VAT_FROM_GROSS_MULTIPLIER);
+        BigDecimal vatTwoDecimalPlaces = vat.setScale(2, RoundingMode.HALF_EVEN);
+        return vatTwoDecimalPlaces.toString();
     }
 }
