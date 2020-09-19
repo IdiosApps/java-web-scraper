@@ -63,11 +63,9 @@ public class WebScraper {
 
             Map<String, String> itemDetails = extractDetailsFromItemPage(itemPage);
 
-            // TODO Can probably tell gson to ignore null kcal values
             Integer kcal = itemDetails.containsKey("kcal") ? Integer.parseInt(itemDetails.get("kcal")) : null;
 
             String description = itemDetails.get("description");
-
 
             HtmlElement priceElement = item.getFirstByXPath(".//p[@class='pricePerUnit']");
             String pricePerUnit = priceElement.asText(); // £1.75/unit
