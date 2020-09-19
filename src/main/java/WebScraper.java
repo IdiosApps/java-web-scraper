@@ -18,17 +18,23 @@ public class WebScraper {
     private final static String PRODUCT_DESCRIPTION_CLASS = "productText";
     private static final String KCAL_CLASS = "nutritionLevel1";
 
+    private final WebClient webClient;
+
+    public WebScraper () {
+        WebClient client = new WebClient();
+        client.getOptions().setCssEnabled(false);
+        client.getOptions().setJavaScriptEnabled(false);
+        this.webClient = client;
+    }
+
     public List<Item> getItemsInPage(String url) {
         List<HtmlElement> items = scrapeSearchUrlForItems(url);
         return extractDataFromItems(items);
     }
 
     public List<HtmlElement> scrapeSearchUrlForItems(String url) {
-        WebClient client = new WebClient();
-        client.getOptions().setCssEnabled(false);
-        client.getOptions().setJavaScriptEnabled(false);
         try {
-            HtmlPage page = client.getPage(url);
+            HtmlPage page = webClient.getPage(url);
 
             // By inspecting the page in Chrome, can see that <li class=gridItem> is what contains each item
             return new ArrayList<>(
@@ -82,11 +88,8 @@ public class WebScraper {
     private Map<String, String> extractDetailsFromItemPage(String itemPage) {
         HashMap<String, String> itemDetails = new HashMap<>();
 
-        WebClient client = new WebClient();
-        client.getOptions().setCssEnabled(false);
-        client.getOptions().setJavaScriptEnabled(false);
         try {
-            HtmlPage page = client.getPage(itemPage);
+            HtmlPage page = webClient.getPage(itemPage);
 
             // TODO refactor this if there's time
             String description; // there's 3 ways the item's description can be stored in html
@@ -115,7 +118,6 @@ public class WebScraper {
         } catch (Exception e) { // TODO this exception is too broad/mishandled
             e.printStackTrace();
         }
-
 
         return itemDetails;
     }
