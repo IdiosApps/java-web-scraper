@@ -59,16 +59,8 @@ public class WebScraper {
             HtmlAnchor titleAnchor = nameAndPromoElement.getFirstByXPath(".//a");
             String title = titleAnchor.asText();
 
-            // In order to get description and kcal per 100g, need to extract for specific page
-            // To get the item's target page, make some assumptions about the url
-            // Search url https://jsainsburyplc.github.io/serverside-test/site/www.sainsburys.co.uk/webapp/...berries-cherries-currants6039.html
-            // Relative item url ../../../../../../shop/gb/groceries/berries-cherries-currants/sainsburys-british-strawberries-400g.html
-            // Item url https://jsainsburyplc.github.io/serverside-test/site/www.sainsburys.co.uk/shop/gb/groceries/berries-cherries-currants/sainsburys-british-strawberries-400g.html
-            // So, append relative url to base https://jsainsburyplc.github.io/serverside-test/site/www.sainsburys.co.uk/
-            String itemPageRelative = titleAnchor.getHrefAttribute();
-            String itemPageSuffix = itemPageRelative.replaceAll("\\.\\./", "");
-            String itemPage = BASE_URL + itemPageSuffix;
 
+            String itemPage = getItemPage(titleAnchor);
             Map<String, String> itemDetails = extractDetailsFromItemPage(itemPage);
             Integer kcal = itemDetails.containsKey("kcal") ? Integer.parseInt(itemDetails.get("kcal")) : null;
             String description = itemDetails.get("description");
@@ -83,6 +75,18 @@ public class WebScraper {
         }
 
         return dataItems;
+    }
+
+    private String getItemPage(HtmlAnchor titleAnchor) {
+        // In order to get description and kcal per 100g, need to extract for specific page
+        // To get the item's target page, make some assumptions about the url:
+        // Search url https://jsainsburyplc.github.io/serverside-test/site/www.sainsburys.co.uk/webapp/...berries-cherries-currants6039.html
+        // Relative item url ../../../../../../shop/gb/groceries/berries-cherries-currants/sainsburys-british-strawberries-400g.html
+        // Item url https://jsainsburyplc.github.io/serverside-test/site/www.sainsburys.co.uk/shop/gb/groceries/berries-cherries-currants/sainsburys-british-strawberries-400g.html
+        // So, append (trimmed) relative url to base https://jsainsburyplc.github.io/serverside-test/site/www.sainsburys.co.uk/
+        String itemPageRelative = titleAnchor.getHrefAttribute();
+        String itemPageSuffix = itemPageRelative.replaceAll("\\.\\./", "");
+        return BASE_URL + itemPageSuffix;
     }
 
     private Map<String, String> extractDetailsFromItemPage(String itemPage) {
@@ -115,7 +119,8 @@ public class WebScraper {
                 String kcal = kcalWithUnit.substring(0, kcalWithUnit.indexOf("k"));
                 itemDetails.put("kcal", kcal);
             }
-        } catch (Exception e) { // TODO this exception is too broad/mishandled
+        } catch (Exception e) {
+            System.out.println("Failed to get data for specific item page - author's assumptions on relative page links may be incorrect");
             e.printStackTrace();
         }
 
