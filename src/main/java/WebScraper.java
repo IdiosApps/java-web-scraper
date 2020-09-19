@@ -78,7 +78,7 @@ public class WebScraper {
     private String getItemPage(HtmlAnchor titleAnchor) {
         // In order to get description and kcal per 100g, need to extract for specific page
         String itemPageLink = titleAnchor.getHrefAttribute();
-        if (itemPageLink.contains("\\.")) {
+        if (itemPageLink.contains("../")) {
             // To get the item's target page, make some assumptions about the url:
             // Search url https://jsainsburyplc.github.io/serverside-test/site/www.sainsburys.co.uk/webapp/...berries-cherries-currants6039.html
             // Relative item url ../../../../../../shop/gb/groceries/berries-cherries-currants/sainsburys-british-strawberries-400g.html
