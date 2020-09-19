@@ -34,6 +34,12 @@ public class ScraperApplication {
         List<HtmlElement> items = scraper.scrapeSearchUrlForItems(searchUrl);
         List<Item> itemSummaries = scraper.extractDataFromItems(items);
 
+        String jsonSummary = getJsonSummary(itemSummaries);
+        System.out.println(jsonSummary);
+        // TODO @SerializedName(value = "kcal_per_100g") etc. in Item
+    }
+
+    private static String getJsonSummary(List<Item> itemSummaries) {
         BigDecimal totalPrice = itemSummaries.stream()
                 .map(item -> item.getPrice())
                 .reduce(new BigDecimal("0.00"), BigDecimal::add);
@@ -41,24 +47,22 @@ public class ScraperApplication {
         BigDecimal vat = totalPrice.multiply(VAT_FROM_GROSS_MULTIPLIER);
         BigDecimal vatTwoDecimalPlaces = vat.setScale(2, RoundingMode.HALF_EVEN);
 
+        JsonArray array = new JsonArray();
+
         Type listType = new TypeToken<List<Item>>() {}.getType();
         Gson gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .disableHtmlEscaping()
                 .create() ;
-        JsonElement jsonElement = gson.toJsonTree(itemSummaries, listType);
+        JsonElement itemsJson = gson.toJsonTree(itemSummaries, listType);
+        array.add(itemsJson);
 
-        // todo Extract out JSON formation
-        JsonArray array = new JsonArray();
         JsonObject summaryJson = new JsonObject();
         summaryJson.addProperty("gross", totalPrice.toString());
         summaryJson.addProperty("vat", vatTwoDecimalPlaces.toString());
-
-        array.add(jsonElement);
         array.add(summaryJson);
 
-        System.out.println(gson.toJson(array));
-        // TODO @SerializedName(value = "kcal_per_100g") etc. in Item
+        return gson.toJson(array);
     }
 
     public List<HtmlElement> scrapeSearchUrlForItems(String url) {
