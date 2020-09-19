@@ -77,14 +77,18 @@ public class WebScraper {
 
     private String getItemPage(HtmlAnchor titleAnchor) {
         // In order to get description and kcal per 100g, need to extract for specific page
-        // To get the item's target page, make some assumptions about the url:
-        // Search url https://jsainsburyplc.github.io/serverside-test/site/www.sainsburys.co.uk/webapp/...berries-cherries-currants6039.html
-        // Relative item url ../../../../../../shop/gb/groceries/berries-cherries-currants/sainsburys-british-strawberries-400g.html
-        // Item url https://jsainsburyplc.github.io/serverside-test/site/www.sainsburys.co.uk/shop/gb/groceries/berries-cherries-currants/sainsburys-british-strawberries-400g.html
-        // So, append (trimmed) relative url to base https://jsainsburyplc.github.io/serverside-test/site/www.sainsburys.co.uk/
-        String itemPageRelative = titleAnchor.getHrefAttribute();
-        String itemPageSuffix = itemPageRelative.replaceAll("\\.\\./", "");
-        return BASE_URL + itemPageSuffix;
+        String itemPageLink = titleAnchor.getHrefAttribute();
+        if (itemPageLink.contains("\\.")) {
+            // To get the item's target page, make some assumptions about the url:
+            // Search url https://jsainsburyplc.github.io/serverside-test/site/www.sainsburys.co.uk/webapp/...berries-cherries-currants6039.html
+            // Relative item url ../../../../../../shop/gb/groceries/berries-cherries-currants/sainsburys-british-strawberries-400g.html
+            // Item url https://jsainsburyplc.github.io/serverside-test/site/www.sainsburys.co.uk/shop/gb/groceries/berries-cherries-currants/sainsburys-british-strawberries-400g.html
+            // So, append (trimmed) relative url to base https://jsainsburyplc.github.io/serverside-test/site/www.sainsburys.co.uk/
+            String itemPageSuffix = itemPageLink.replaceAll("\\.\\./", "");
+            return BASE_URL + itemPageSuffix;
+        } else {
+            return itemPageLink; // not relative, no processing needs to be done
+        }
     }
 
     private Map<String, String> extractDetailsFromItemPage(String itemPage) {
