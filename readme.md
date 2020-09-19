@@ -1,16 +1,24 @@
-Challenge is described at https://jsainsburyplc.github.io/serverside-test/
+This Java console application project scrapes a sample [Sainsbury's website](https://jsainsburyplc.github.io/serverside-test/site/www.sainsburys.co.uk/webapp/wcs/stores/servlet/gb/groceries/berries-cherries-currants6039.html) and log out a JSON summary of products on the page.
 
-Basically scrape HTML to return JSON, through a Java CLI app
+If all information is available on an item's page, JSON for that item will look like:
+ ```
+{
+    "title": "Sainsbury's Strawberries 400g",
+    "description": "by Sainsbury's strawberries",
+    "unit_price": 1.75,
+    "kcal_per_100g": 33
+}
+```
+, as described in the [brief's specification.](https://jsainsburyplc.github.io/serverside-test/). `kcal_per_100g` will be absent if the item's calories are unavailable. The JSON will include a summary of gross and vat, for example:
+```
+  {
+    "gross": "39.50",
+    "vat": "6.58"
+  }
+```
 
-HtmlUnit seems to be an appropriate tool, with good tutorials:     https://www.scrapingbee.com/blog/introduction-to-web-scraping-with-java/
+There's just one CLI arg at the moment:
 
-The document to be scraped is at:
+- `-u` / `--url`, to specify the page to scrape (must be similar to the example berries-cherries page, e.g. [this bananas-grapes page](https://jsainsburyplc.github.io/serverside-test/site/www.sainsburys.co.uk/shop/gb/groceries/fruit-veg/bananas-grapes.html)  which also has items stored in `gridItem` classes)
 
-https://jsainsburyplc.github.io/serverside-test/site/www.sainsburys.co.uk/webapp/wcs/stores/servlet/gb/groceries/berries-cherries-currants6039.html
-
-CLI could feasibly take in options
-
-- `-w` / `--webpage` to specify the page to scrape (must be similar to the example berries-cherries page)
--  to be completed...
-
-Written using Java 8
+Written using `Java 8`, `JUnit` tests (`ItemSummarizerTest`, `ScraperApplicationTest` - just press run in `IntelliJ`), `Gradle`, `commons-cli`, and `HtmlUnit` 
