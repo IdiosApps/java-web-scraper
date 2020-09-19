@@ -3,7 +3,9 @@ import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +42,7 @@ public class WebScraper {
             return new ArrayList<>(
                     page.getByXPath("//li[@class='" + GRID_ITEM_CLASS + "']")
             );
-        } catch (Exception e) { // TODO this exception is too broad/mishandled
+        } catch (Exception e) { // MalformedURLException / IOException both give useful trace, so just log them out
             e.printStackTrace();
         }
 
@@ -68,9 +70,7 @@ public class WebScraper {
             String itemPage = BASE_URL + itemPageSuffix;
 
             Map<String, String> itemDetails = extractDetailsFromItemPage(itemPage);
-
             Integer kcal = itemDetails.containsKey("kcal") ? Integer.parseInt(itemDetails.get("kcal")) : null;
-
             String description = itemDetails.get("description");
 
             HtmlElement priceElement = item.getFirstByXPath(".//p[@class='"+ PRICE_PER_UNIT_CLASS + "']");
