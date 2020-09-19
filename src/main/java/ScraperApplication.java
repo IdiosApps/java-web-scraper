@@ -42,7 +42,10 @@ public class ScraperApplication {
         BigDecimal vatTwoDecimalPlaces = vat.setScale(2, RoundingMode.HALF_EVEN);
 
         Type listType = new TypeToken<List<Item>>() {}.getType();
-        Gson gson = new GsonBuilder().setPrettyPrinting().create() ;
+        Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .disableHtmlEscaping()
+                .create() ;
         JsonElement jsonElement = gson.toJsonTree(itemSummaries, listType);
 
         // todo Extract out JSON formation
@@ -54,7 +57,7 @@ public class ScraperApplication {
         array.add(jsonElement);
         array.add(summaryJson);
 
-        System.out.println(array.toString());
+        System.out.println(gson.toJson(array));
         // TODO @SerializedName(value = "kcal_per_100g") etc. in Item
     }
 
