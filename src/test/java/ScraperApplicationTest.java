@@ -17,9 +17,7 @@ public class ScraperApplicationTest {
 
         String json = scraperApplication.getJsonForPage(ScraperApplication.DEFAULT_SEARCH_URL);
 
-        JsonObject jsonArray = new Gson().fromJson(json, JsonObject.class);
-
-        assertEquals("39.50", jsonArray.get("gross").getAsString());
+        assertTrue(json.contains("\"gross\": \"39.50\""));
     }
 
     @Test
